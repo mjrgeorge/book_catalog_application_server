@@ -1,5 +1,5 @@
 {
-  "name": "simple_book_catalog_application_server",
+  "name": "book_catalog_application_server",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.ts",
