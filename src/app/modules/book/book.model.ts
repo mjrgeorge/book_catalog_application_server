@@ -1,5 +1,6 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import { IBook } from './book.interface';
+import { Review } from '../review/review.model';
 
 const bookSchema = new Schema<IBook>(
   {
@@ -19,6 +20,12 @@ const bookSchema = new Schema<IBook>(
       type: Number,
       required: true,
     },
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Review,
+      },
+    ],
   },
   {
     timestamps: true,

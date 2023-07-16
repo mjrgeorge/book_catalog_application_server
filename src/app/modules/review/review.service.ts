@@ -2,19 +2,19 @@ import { SortOrder } from 'mongoose';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { bookSearchableFields } from './book.constant';
-import { IBook, IBookFilters } from './book.interface';
-import { Book } from './book.model';
+import { reviewSearchableFields } from './review.constant';
+import { IReview, IReviewFilters } from './review.interface';
+import { Review } from './review.model';
 
-const createBook = async (payload: IBook): Promise<IBook> => {
-  const result = await Book.create(payload);
+const createReview = async (payload: IReview): Promise<IReview> => {
+  const result = await Review.create(payload);
   return result;
 };
 
-const getAllBooks = async (
-  filters: IBookFilters,
+const getAllReviews = async (
+  filters: IReviewFilters,
   paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<IBook[]>> => {
+): Promise<IGenericResponse<IReview[]>> => {
   const { searchTerm, ...filtersData } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -23,7 +23,7 @@ const getAllBooks = async (
 
   if (searchTerm) {
     andConditions.push({
-      $or: bookSearchableFields.map(field => ({
+      $or: reviewSearchableFields.map(field => ({
         [field]: {
           $regex: searchTerm,
           $options: 'i',
@@ -48,13 +48,12 @@ const getAllBooks = async (
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
-  const result = await Book.find(whereConditions)
-    .populate('reviews')
+  const result = await Review.find(whereConditions)
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
 
-  const total = await Book.countDocuments();
+  const total = await Review.countDocuments();
 
   return {
     meta: {
@@ -66,30 +65,30 @@ const getAllBooks = async (
   };
 };
 
-const getSingleBook = async (id: string): Promise<IBook | null> => {
-  const result = await Book.findById(id).populate('reviews');
+const getSingleReview = async (id: string): Promise<IReview | null> => {
+  const result = await Review.findById(id);
   return result;
 };
 
-const updateBook = async (
+const updateReview = async (
   id: string,
-  payload: Partial<IBook>
-): Promise<IBook | null> => {
-  const result = await Book.findOneAndUpdate({ _id: id }, payload, {
+  payload: Partial<IReview>
+): Promise<IReview | null> => {
+  const result = await Review.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });
   return result;
 };
 
-const deleteBook = async (id: string): Promise<IBook | null> => {
-  const result = await Book.findByIdAndDelete(id);
+const deleteReview = async (id: string): Promise<IReview | null> => {
+  const result = await Review.findByIdAndDelete(id);
   return result;
 };
 
-export const BookService = {
-  createBook,
-  getAllBooks,
-  getSingleBook,
-  updateBook,
-  deleteBook,
+export const ReviewService = {
+  createReview,
+  getAllReviews,
+  getSingleReview,
+  updateReview,
+  deleteReview,
 };

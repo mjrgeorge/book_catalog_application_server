@@ -1,18 +1,18 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { IBook } from './book.interface';
-import { BookService } from './book.service';
+import { Review } from '../review/review.model';
 import { bookFilterableFields } from './book.constant';
+import { IBook } from './book.interface';
+import { Book } from './book.model';
+import { BookService } from './book.service';
 
 const createBook = catchAsync(async (req: Request, res: Response) => {
   const { ...bookData } = req.body;
-  const result = await BookService.createBook(
-    bookData
-  );
+  const result = await BookService.createBook(bookData);
 
   sendResponse<IBook>(res, {
     statusCode: httpStatus.OK,
@@ -26,10 +26,7 @@ const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, bookFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await BookService.getAllBooks(
-    filters,
-    paginationOptions
-  );
+  const result = await BookService.getAllBooks(filters, paginationOptions);
 
   sendResponse<IBook[]>(res, {
     statusCode: httpStatus.OK,
@@ -66,6 +63,29 @@ const updateBook = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const updateBookWithReview = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const bookId = req.params.id;
+      const updatedData = req.body;
+
+      const newReview = await Review.create(updatedData);
+      const newBook = await Book.findByIdAndUpdate(
+        bookId,
+        {
+          $push: { reviews: newReview._id },
+        },
+        { new: true, useFindAndModify: false }
+      );
+
+      res.send(newBook);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 const deleteBook = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -84,5 +104,6 @@ export const BookController = {
   getAllBooks,
   getSingleBook,
   updateBook,
+  updateBookWithReview,
   deleteBook,
 };

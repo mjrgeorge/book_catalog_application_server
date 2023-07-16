@@ -18,6 +18,11 @@ router.patch(
   BookController.updateBook
 );
 
+router.patch(
+  '/review/:id',
+  BookController.updateBookWithReview
+);
+
 router.delete('/:id', BookController.deleteBook);
 
 router.get('/', BookController.getAllBooks);
