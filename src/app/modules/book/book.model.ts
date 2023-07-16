@@ -20,6 +20,10 @@ const bookSchema = new Schema<IBook>(
       type: Number,
       required: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+    },
     reviews: [
       {
         type: mongoose.Schema.Types.ObjectId,

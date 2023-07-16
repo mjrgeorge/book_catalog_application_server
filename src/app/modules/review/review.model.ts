@@ -7,10 +7,6 @@ const reviewSchema = new Schema<IReview>(
       type: String,
       required: true,
     },
-    userName: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,
