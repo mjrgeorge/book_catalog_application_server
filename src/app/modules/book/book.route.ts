@@ -4,6 +4,8 @@ import { BookController } from './book.controller';
 import { BookValidation } from './book.validation';
 const router = express.Router();
 
+router.get('/', BookController.getAllBooks);
+
 router.post(
   '/create-book',
   validateRequest(BookValidation.createBookZodSchema),
@@ -18,13 +20,8 @@ router.patch(
   BookController.updateBook
 );
 
-router.patch(
-  '/review/:id',
-  BookController.updateBookWithReview
-);
+router.patch('/review/:id', BookController.updateBookWithReview);
 
 router.delete('/:id', BookController.deleteBook);
-
-router.get('/', BookController.getAllBooks);
 
 export const BookRoutes = router;
